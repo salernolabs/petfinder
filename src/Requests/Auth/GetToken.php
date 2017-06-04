@@ -10,5 +10,5 @@ namespace SalernoLabs\Petfinder\Requests\Auth;
 
 class GetToken extends \SalernoLabs\Petfinder\Request
 {
-
+    const PETFINDER_COMMAND = 'auth.getToken';
 }

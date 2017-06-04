@@ -12,20 +12,62 @@ use SalernoLabs\Petfinder\Exceptions\Exception;
 
 abstract class Request implements RequestInterface
 {
+    const PETFINDER_COMMAND = '';
+
     /**
-     * Get parameter array
-     *
-     * @return []
+     * @var Configuration
      */
-    public function getParameterArray()
+    private $configuration;
+
+    /**
+     * @var array
+     */
+    private $parameters = [];
+
+    /**
+     * @var array
+     */
+    protected $requiredParameters = [];
+
+    /**
+     * Request constructor.
+     * @param Configuration $configuration
+     */
+    public function __construct(Configuration $configuration)
     {
-        return [];
+        $this->configuration = $configuration;
+    }
+
+    /**
+     * Set parameter values
+     *
+     * @param $key
+     * @param $value
+     */
+    protected function setParameterValue($key, $value)
+    {
+        $this->parameters[$key] = urlencode($value);
+    }
+
+    /**
+     * Validate requirement parameters are present
+     *
+     * @throws Exception
+     */
+    private function validateRequiredParametersArePresent()
+    {
+        foreach ($this->requiredParameters as $field)
+        {
+            if (empty($this->parameters[$field]))
+            {
+                throw new Exceptions\Exception("Missing parameter for " . static::PETFINDER_COMMAND . " to function: " . $field);
+            }
+        }
     }
 
     /**
      * Execute the request
      *
-     * @param Configuration $configuration
      * @return mixed
      * @throws Exception
      * @throws Exceptions\AuthenticationFailure
@@ -35,42 +77,53 @@ abstract class Request implements RequestInterface
      * @throws Exceptions\RecordDoesNotExist
      * @throws Exceptions\Unauthorized
      */
-    public function execute(Configuration $configuration)
+    public function execute()
     {
+        $this->validateRequiredParametersArePresent();
+
         //Initialize guzzle
         $client = new \GuzzleHttp\Client();
 
-        $commandParameters = $this->getParameterArray();
-        $commandParameters['format'] = 'json';
+        $commandParameters = array_merge(
+            [
+                'format'=>'json',
+                'key'=>$this->configuration->getKey()
+            ],
+            $this->parameters
+        );
 
         //Sign the request
-        $commandParameters['key'] = $configuration->getKey();
         $commandParameterString = http_build_query($commandParameters);
-        $commandParameters['sig'] = md5($configuration->getSecret() . $commandParameterString);
+        $commandParameters['sig'] = md5($this->configuration->getSecret() . $commandParameterString);
+
+        $commandParameterString .= '&sig=' . $commandParameters['sig'];
 
         $requestParameters = [
-            'query' => $commandParameters
+            'body' => $commandParameterString
         ];
 
+        $endPoint = $this->configuration->getEndPoint() . static::PETFINDER_COMMAND;
+
         //Make the request
-        $result = $client->request('GET', $configuration->getEndPoint(), $requestParameters);
+        $result = $client->request('POST', $endPoint, $requestParameters);
 
         //Validate the result
         if ($result->getStatusCode() != 200)
         {
-            throw new Exceptions\Exception("Failed to make a successful request to petfinder api endpoint " . $configuration->getEndPoint() . " with error code " . $result->getStatusCode() . " and error " . $result->getReasonPhrase());
+            throw new Exceptions\Exception("Failed to make a successful request to petfinder api endpoint " . $endPoint . " with error code " . $result->getStatusCode() . " and error " . $result->getReasonPhrase());
         }
 
         $data = json_decode($result->getBody());
 
         if (empty($data))
         {
-            throw new Exceptions\Exception("Retrieved non-JSON content from petfinder api endpoint " . $configuration->getEndPoint());
+            die($result->getBody());
+            throw new Exceptions\Exception("Retrieved non-JSON content from petfinder api endpoint " . $endPoint);
         }
 
         if (empty($data->header->status->code))
         {
-            throw new Exceptions\Exception("Unknown JSON formatted content returned from petfdiner api endpoint " . $configuration->getEndPoint());
+            throw new Exceptions\Exception("Unknown JSON formatted content returned from petfinder api endpoint " . $endPoint);
         }
 
         if ($data->header->status->code != 100)
