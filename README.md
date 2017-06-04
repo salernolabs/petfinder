@@ -16,3 +16,91 @@ This is an unofficial PHP Petfinder API SDK that uses the freely available [petf
 When you have your API key and secret you can use this library.
 
 This is built for an upcoming animal rescue site and we weren't happy with the current PHP based offerings for petfinder API libraries.
+
+## Queries
+
+All examples that follow assume you have a $configuration object built with your api key and secret.
+
+### auth.getToken
+
+    $request = new \SalernoLabs\Petfinder\Requests\Auth\GetToken($configuration);
+    $data = $request->execute();
+
+### breed.list
+
+    $request = new \SalernoLabs\Petfinder\Requests\Breed\GetList($configuration);
+    $data = $request
+                ->setAnimal('dog')
+                ->execute();
+
+### pet.find
+
+    $request = new \SalernoLabs\Petfinder\Requests\Pet\Find($configuration);
+    $data = $request
+                ->setAnimal('dog')
+                ->setBreed('shnauzer')
+                ->setSize('XL')
+                ->setSex('M')
+                ->setLocation('12345')
+                ->setAge('Young')
+                ->setCount(10)
+                ->setOffset($lastOffset)
+                ->setOutput('full')
+                ->execute();
+
+### pet.get
+
+    $request = new \SalernoLabs\Petfinder\Requests\Pet\Get($configuration);
+    $data = $request
+                ->setId(12345)
+                ->execute();
+
+### pet.getRandom
+
+    $request = new \SalernoLabs\Petfinder\Requests\Pet\GetRandom($configuration);
+    $data = $request
+                ->setAnimal('dog')
+                ->setBreed('shnauzer')
+                ->setSize('XL')
+                ->setSex('M')
+                ->setLocation('12345')
+                ->setShelterId('NJ1234')
+                ->setOutput('basic')
+                ->execute();
+
+### shelter.find
+
+    $request = new \SalernoLabs\Petfinder\Requests\Shelter\Find($configuration);
+    $data = $request
+                ->setLocation('12345')
+                ->setCount(10)
+                ->setOffset($lastOffset)
+                ->execute();
+
+### shelter.get
+
+    $request = new \SalernoLabs\Petfinder\Requests\Shelter\Get($configuration);
+    $data = $request
+                ->setId(12345)
+                ->execute();
+
+### shelter.getPets
+
+    $request = new \SalernoLabs\Petfinder\Requests\Shelter\GetPets($configuration);
+    $data = $request
+                ->setId(12345)
+                ->setCount(10)
+                ->setOffset($lastOffset)
+                ->execute();
+
+### shelter.listByBreed
+
+    $request = new \SalernoLabs\Petfinder\Requests\Shelter\ListByBreed($configuration);
+    $data = $request
+                ->setAnimal('dog')
+                ->setBreed('shnauzer')
+                ->setCount(10)
+                ->setOffset($lastOffset)
+                ->execute();
+
+## still in development, these do not work yet!
