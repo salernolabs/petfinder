@@ -18,6 +18,7 @@ class GetToken extends \PHPUnit\Framework\TestCase
      */
     public function testPerformTokenRetrieval()
     {
+        //This isn't working for me for some reason, I want to make sure its not a key thing first.
         return;
 
         $request = new \SalernoLabs\Petfinder\Requests\Auth\GetToken($this->configuration);
