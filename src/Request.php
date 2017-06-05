@@ -81,8 +81,94 @@ abstract class Request implements RequestInterface
     {
         $this->validateRequiredParametersArePresent();
 
+        $result = $this->makeGuzzleGETRequest();
+
+        //Validate the result
+        if ($result->getStatusCode() != 200)
+        {
+            throw new Exceptions\Exception("Failed to make a successful request to petfinder api endpoint " . $this->configuration->getEndPoint() . static::PETFINDER_COMMAND . " with error code " . $result->getStatusCode() . " and error " . $result->getReasonPhrase());
+        }
+
+        $data = json_decode($result->getBody());
+
+        if (empty($data))
+        {
+            throw new Exceptions\Exception("Retrieved non-JSON content from petfinder api endpoint " . $this->configuration->getEndPoint() . static::PETFINDER_COMMAND);
+        }
+
+        if (empty($data->petfinder) || empty($data->petfinder->header->status->code->{'$t'}))
+        {
+            throw new Exceptions\Exception("Unknown JSON formatted content returned from petfinder api endpoint " . $this->configuration->getEndPoint() . static::PETFINDER_COMMAND);
+        }
+
+        if ($data->petfinder->header->status->code->{'$t'} != 100)
+        {
+            $this->handlePetfinderError($data->petfinder->header->status->code->{'$t'}, $data->petfinder->header->status->message);
+        }
+
+        //All's fine, return the object
+        return $data->petfinder;
+    }
+
+    /**
+     * Make Guzzle POST Request
+     *
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     */
+    private function makeGuzzlePOSTRequest()
+    {
         //Initialize guzzle
-        $client = new \GuzzleHttp\Client();
+        $client = new \GuzzleHttp\Client(
+            [
+                'base_uri' => $this->configuration->getEndPoint()
+            ]
+        );
+
+        $commandParameters = array_merge(
+            [
+                //'format'=>'json',
+                'key'=>$this->configuration->getKey()
+            ],
+            $this->parameters
+        );
+
+        //Sign the request
+        //$commandParameterString = http_build_query($commandParameters);
+        $commandParameterString = '';
+        foreach ($commandParameters as $field => $value)
+        {
+            if (!empty($commandParameterString)) $commandParameterString .= '&';
+
+            $commandParameterString .= $field . '=' . urlencode($value);
+        }
+
+        $commandParameters['sig'] = md5($this->configuration->getSecret() . $commandParameterString);
+
+        $commandParameterString .= '&sig=' . $commandParameters['sig'];
+
+        $requestParameters = [
+            'body' => $commandParameterString,
+        ];
+
+        //$endPoint = $this->configuration->getEndPoint() . static::PETFINDER_COMMAND;
+
+        //Make the request
+        return $client->request('POST', '/' . static::PETFINDER_COMMAND, $requestParameters);
+    }
+
+    /**
+     * Make Guzzle GET request
+     *
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     */
+    private function makeGuzzleGETRequest()
+    {
+        //Initialize guzzle
+        $client = new \GuzzleHttp\Client(
+            [
+                'base_uri' => $this->configuration->getEndPoint()
+            ]
+        );
 
         $commandParameters = array_merge(
             [
@@ -93,46 +179,21 @@ abstract class Request implements RequestInterface
         );
 
         //Sign the request
-        $commandParameterString = http_build_query($commandParameters);
+        $commandParameterString = '';
+        foreach ($commandParameters as $field => $value)
+        {
+            if (!empty($commandParameterString)) $commandParameterString .= '&';
+
+            $commandParameterString .= $field . '=' . urlencode($value);
+        }
         $commandParameters['sig'] = md5($this->configuration->getSecret() . $commandParameterString);
 
-        $commandParameterString .= '&sig=' . $commandParameters['sig'];
-
         $requestParameters = [
-            'body' => $commandParameterString
+            'query' => $commandParameters,
         ];
 
-        $endPoint = $this->configuration->getEndPoint() . static::PETFINDER_COMMAND;
-
         //Make the request
-        $result = $client->request('POST', $endPoint, $requestParameters);
-
-        //Validate the result
-        if ($result->getStatusCode() != 200)
-        {
-            throw new Exceptions\Exception("Failed to make a successful request to petfinder api endpoint " . $endPoint . " with error code " . $result->getStatusCode() . " and error " . $result->getReasonPhrase());
-        }
-
-        $data = json_decode($result->getBody());
-
-        if (empty($data))
-        {
-            die($result->getBody());
-            throw new Exceptions\Exception("Retrieved non-JSON content from petfinder api endpoint " . $endPoint);
-        }
-
-        if (empty($data->header->status->code))
-        {
-            throw new Exceptions\Exception("Unknown JSON formatted content returned from petfinder api endpoint " . $endPoint);
-        }
-
-        if ($data->header->status->code != 100)
-        {
-            $this->handlePetfinderError($data->header->status->code, $data->header->status->message);
-        }
-
-        //All's fine, return the object
-        return $data;
+        return $client->request('GET', '/' . static::PETFINDER_COMMAND, $requestParameters);
     }
 
     /**

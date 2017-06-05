@@ -19,8 +19,12 @@ class GetListTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidRequest($animalType)
     {
-        $request = new \SalernoLabs\Petfinder\Requests\Auth\GetToken($this->configuration);
-        $data = $request->execute();
+        $request = new \SalernoLabs\Petfinder\Requests\Breed\GetList($this->configuration);
+        $data = $request
+                    ->setAnimal($animalType)
+                    ->execute();
+
+        $this->assertNotEmpty($data->breeds->breed);
     }
 
     /**

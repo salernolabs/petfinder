@@ -27,7 +27,7 @@ class Configuration
     /**
      * @var string
      */
-    private $endPoint = 'http://api.petfinder.com/';
+    private $endPoint = 'http://api.petfinder.com';
 
     /**
      * Set key
