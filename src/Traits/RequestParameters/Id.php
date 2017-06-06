@@ -17,16 +17,16 @@ trait Id
      * @return $this
      * @throws \SalernoLabs\Petfinder\Exceptions\Exception
      */
-    public function setId($petId)
+    public function setId($itemId)
     {
-        $petId = intval($petId);
+        $itemId = intval($itemId);
 
-        if (empty($petId))
+        if (empty($itemId))
         {
             throw new \SalernoLabs\Petfinder\Exceptions\Exception("Please enter a valid id for this function.");
         }
 
-        $this->setParameterValue('id', $petId);
+        $this->setParameterValue('id', $itemId);
 
         return $this;
     }

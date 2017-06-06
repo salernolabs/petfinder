@@ -25,7 +25,8 @@ trait TestHelper
 
         if (empty($key) || empty($secret))
         {
-            die('To run tests, please specify environment variables PETFINDER_KEY and PETFINDER_SECRET.');
+            $this->markTestSkipped(get_called_class() . ' - to run this test, please specify environment variables PETFINDER_KEY and PETFINDER_SECRET.' . PHP_EOL);
+            return;
         }
 
         $this->configuration = new \SalernoLabs\Petfinder\Configuration();
