@@ -30,6 +30,11 @@ class Configuration
     private $endPoint = 'http://api.petfinder.com';
 
     /**
+     * @var boolean
+     */
+    private $testMode = false;
+
+    /**
      * Set key
      *
      * @param $key
@@ -87,6 +92,19 @@ class Configuration
     }
 
     /**
+     * Set test mode
+     *
+     * @param $testMode
+     * @return $this
+     */
+    public function setTestMode($testMode)
+    {
+        $this->testMode = $testMode;
+
+        return $this;
+    }
+
+    /**
      * Get endPoint
      *
      * @return string
@@ -126,4 +144,13 @@ class Configuration
         return $this->token;
     }
 
+    /**
+     * Get test mode
+     *
+     * @return bool
+     */
+    public function getTestMode()
+    {
+        return $this->testMode;
+    }
 }

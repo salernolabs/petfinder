@@ -13,6 +13,7 @@ namespace SalernoLabs\Petfinder\Requests\Breed;
 class GetList extends \SalernoLabs\Petfinder\Request
 {
     const PETFINDER_COMMAND = 'breed.list';
+    const PETFINDER_REQUEST_TYPE = 'GET';
 
     use \SalernoLabs\Petfinder\Traits\RequestParameters\Animal;
 

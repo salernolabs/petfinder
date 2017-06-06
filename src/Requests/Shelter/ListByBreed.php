@@ -11,6 +11,7 @@ namespace SalernoLabs\Petfinder\Requests\Shelter;
 class ListByBreed extends \SalernoLabs\Petfinder\Request
 {
     const PETFINDER_COMMAND = 'shelter.listByBreed';
+    const PETFINDER_REQUEST_TYPE = 'GET';
 
     use \SalernoLabs\Petfinder\Traits\RequestParameters\ShelterId,
         \SalernoLabs\Petfinder\Traits\RequestParameters\Animal,

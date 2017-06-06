@@ -11,6 +11,7 @@ namespace SalernoLabs\Petfinder\Requests\Shelter;
 class GetPets extends \SalernoLabs\Petfinder\Request
 {
     const PETFINDER_COMMAND = 'shelter.getPets';
+    const PETFINDER_REQUEST_TYPE = 'GET';
 
     use \SalernoLabs\Petfinder\Traits\RequestParameters\ShelterId,
         \SalernoLabs\Petfinder\Traits\RequestParameters\Pagination,

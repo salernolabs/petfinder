@@ -11,6 +11,7 @@ namespace SalernoLabs\Petfinder\Requests\Pet;
 class GetRandom extends \SalernoLabs\Petfinder\Request
 {
     const PETFINDER_COMMAND = 'pet.getRandom';
+    const PETFINDER_REQUEST_TYPE = 'GET';
 
     use \SalernoLabs\Petfinder\Traits\RequestParameters\Animal,
         \SalernoLabs\Petfinder\Traits\RequestParameters\Breed,

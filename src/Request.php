@@ -13,6 +13,7 @@ use SalernoLabs\Petfinder\Exceptions\Exception;
 abstract class Request implements RequestInterface
 {
     const PETFINDER_COMMAND = '';
+    const PETFINDER_REQUEST_TYPE = 'GET';
 
     /**
      * @var Configuration
@@ -81,10 +82,14 @@ abstract class Request implements RequestInterface
     {
         $this->validateRequiredParametersArePresent();
 
-        $result = $this->makeGuzzleGETRequest();
+        $result = null;
+        if (static::PETFINDER_REQUEST_TYPE == 'GET')
+            $result = $this->makeGuzzleGETRequest();
+        elseif (static::PETFINDER_REQUEST_TYPE == 'POST')
+            $result = $this->makeGuzzlePOSTRequest();
 
         //Validate the result
-        if ($result->getStatusCode() != 200)
+        if (empty($result) || $result->getStatusCode() != 200)
         {
             throw new Exceptions\Exception("Failed to make a successful request to petfinder api endpoint " . $this->configuration->getEndPoint() . static::PETFINDER_COMMAND . " with error code " . $result->getStatusCode() . " and error " . $result->getReasonPhrase());
         }

@@ -32,7 +32,8 @@ trait TestHelper
         $this->configuration = new \SalernoLabs\Petfinder\Configuration();
 
         $this->configuration
-            ->setKey($key, $secret);
+            ->setKey($key, $secret)
+            ->setTestMode(true);
     }
 
 }

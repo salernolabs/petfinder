@@ -11,6 +11,7 @@ namespace SalernoLabs\Petfinder\Requests\Shelter;
 class Find extends \SalernoLabs\Petfinder\Request
 {
     const PETFINDER_COMMAND = 'shelter.find';
+    const PETFINDER_REQUEST_TYPE = 'GET';
 
     use \SalernoLabs\Petfinder\Traits\RequestParameters\Location,
         \SalernoLabs\Petfinder\Traits\RequestParameters\Pagination;
