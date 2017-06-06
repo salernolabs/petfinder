@@ -22,7 +22,7 @@ class GetTest extends \PHPUnit\Framework\TestCase
         $query = new \SalernoLabs\Petfinder\Requests\Pet\Get($this->configuration);
 
         $data = $query
-            ->setId(1000)
+            ->setId(37372309)
             ->execute();
 
         $this->assertNotEmpty($data);

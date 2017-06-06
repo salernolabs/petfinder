@@ -22,6 +22,7 @@ class ListByBreedTest extends \PHPUnit\Framework\TestCase
         $query = new \SalernoLabs\Petfinder\Requests\Shelter\ListByBreed($this->configuration);
 
         $data = $query
+            ->setId('NY1100')
             ->setAnimal('dog')
             ->setBreed('Siberian Husky')
             ->execute();

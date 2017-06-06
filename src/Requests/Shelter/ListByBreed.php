@@ -12,12 +12,13 @@ class ListByBreed extends \SalernoLabs\Petfinder\Request
 {
     const PETFINDER_COMMAND = 'shelter.listByBreed';
 
-    use \SalernoLabs\Petfinder\Traits\RequestParameters\Animal,
+    use \SalernoLabs\Petfinder\Traits\RequestParameters\ShelterId,
+        \SalernoLabs\Petfinder\Traits\RequestParameters\Animal,
         \SalernoLabs\Petfinder\Traits\RequestParameters\Breed,
         \SalernoLabs\Petfinder\Traits\RequestParameters\Pagination;
 
     /**
      * @var array
      */
-    protected $requiredParameters = ['animal', 'breed'];
+    protected $requiredParameters = ['id', 'animal', 'breed'];
 }

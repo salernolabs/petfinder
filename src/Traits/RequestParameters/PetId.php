@@ -8,7 +8,7 @@
  */
 namespace SalernoLabs\Petfinder\Traits\RequestParameters;
 
-trait Id
+trait PetId
 {
     /**
      * Set id
@@ -17,16 +17,16 @@ trait Id
      * @return $this
      * @throws \SalernoLabs\Petfinder\Exceptions\Exception
      */
-    public function setId($itemId)
+    public function setId($petId)
     {
-        $itemId = intval($itemId);
+        $petId = intval($petId);
 
-        if (empty($itemId))
+        if (empty($petId))
         {
             throw new \SalernoLabs\Petfinder\Exceptions\Exception("Please enter a valid id for this function.");
         }
 
-        $this->setParameterValue('id', $itemId);
+        $this->setParameterValue('id', $petId);
 
         return $this;
     }

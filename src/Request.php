@@ -211,6 +211,16 @@ abstract class Request implements RequestInterface
      */
     private function handlePetfinderError($code, $message)
     {
+        if (empty($message))
+        {
+            $message = null;
+        }
+
+        if (!empty($message->{'$t'}))
+        {
+            $message = $message->{'$t'};
+        }
+
         switch ($code)
         {
             default:

@@ -12,7 +12,7 @@ class Get extends \SalernoLabs\Petfinder\Request
 {
     const PETFINDER_COMMAND = 'shelter.get';
 
-    use \SalernoLabs\Petfinder\Traits\RequestParameters\Id;
+    use \SalernoLabs\Petfinder\Traits\RequestParameters\ShelterId;
 
     /**
      * @var array

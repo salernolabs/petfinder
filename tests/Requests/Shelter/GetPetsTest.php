@@ -22,7 +22,7 @@ class GetPetsTest extends \PHPUnit\Framework\TestCase
         $query = new \SalernoLabs\Petfinder\Requests\Shelter\GetPets($this->configuration);
 
         $data = $query
-            ->setId(1000)
+            ->setId('NY1100')
             ->setCount(10)
             ->execute();
 
