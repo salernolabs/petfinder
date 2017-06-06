@@ -23,6 +23,13 @@ This is built for an upcoming animal rescue site and we weren't happy with the c
 
 All examples that follow assume you have a $configuration object built with your api key and secret.
 
+    $configuration = new \SalernoLabs\Petfinder\Configuration();
+
+    $configuration
+        ->setKey($key, $secret);
+
+There are some other values you can adjust in the configuration object, see code for more details.
+
 ### auth.getToken
 
     $request = new \SalernoLabs\Petfinder\Requests\Auth\GetToken($configuration);
