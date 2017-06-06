@@ -15,7 +15,9 @@ This is an unofficial PHP Petfinder API SDK that uses the freely available [petf
 
 When you have your API key and secret you can use this library.
 
-This is built for an upcoming animal rescue site and we weren't happy with the current PHP based offerings for petfinder API libraries. Not 100% working but almost there so far.
+This is built for an upcoming animal rescue site and we weren't happy with the current PHP based offerings for petfinder API libraries. Not 100% working but almost there so far. To use this library:
+
+    composer require salernolabs/petfinder
 
 ## Queries
 
