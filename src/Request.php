@@ -111,9 +111,53 @@ abstract class Request implements RequestInterface
             $this->handlePetfinderError($data->petfinder->header->status->code->{'$t'}, $data->petfinder->header->status->message);
         }
 
-        //All's fine, return the object
+        //All's fine, return the processed object
+        $processed = $this->processResult($data);
+
+        return $processed;
+    }
+
+    /**
+     * Return processed results
+     *
+     * @param $data
+     * @return Responses\BreedList
+     */
+    private function processResult($data)
+    {
+        if (!empty($data->petfinder->breeds->breed))
+        {
+            return new \SalernoLabs\Petfinder\Responses\BreedList($data);
+        }
+        else if (!empty($data->petfinder->pets->pet))
+        {
+            return new \SalernoLabs\Petfinder\Responses\PetList($data);
+        }
+        else if (!empty($data->petfinder->pet))
+        {
+            return new \SalernoLabs\Petfinder\Responses\Pet($data->petfinder->pet);
+        }
+        else if (!empty($data->petfinder->petIds->id))
+        {
+            $array = [];
+            if (is_array($data->petfinder->petIds->id))
+            {
+                foreach ($data->petfinder->petIds->id as $id)
+                {
+                    $array[] = $id->{'$t'};
+                }
+            }
+            else
+            {
+                $array[] = $data->petfinder->petIds->id->{'$t'};
+            }
+
+            return $array;
+        }
+
         return $data->petfinder;
     }
+
 
     /**
      * Make Guzzle POST Request

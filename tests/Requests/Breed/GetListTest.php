@@ -24,7 +24,9 @@ class GetListTest extends \PHPUnit\Framework\TestCase
                     ->setAnimal($animalType)
                     ->execute();
 
-        $this->assertNotEmpty($data->breeds->breed);
+        $this->assertInstanceOf('\SalernoLabs\Petfinder\Responses\BreedList', $data);
+        $this->assertNotEmpty($data->breeds);
+        $this->assertEquals($animalType, $data->animal);
     }
 
     /**

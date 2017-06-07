@@ -25,13 +25,13 @@ class ListByBreedTest extends \PHPUnit\Framework\TestCase
             ->setAnimal($animal)
             ->execute();
 
-        $this->assertNotEmpty($breeds->breeds->breed[0]->{'$t'});
+        $this->assertNotEmpty($breeds->breeds[0]);
 
         $query = new \SalernoLabs\Petfinder\Requests\Shelter\ListByBreed($this->configuration);
 
         $data = $query
             ->setAnimal($animal)
-            ->setBreed($breeds->breeds->breed[0]->{'$t'})
+            ->setBreed($breeds->breeds[0])
             ->execute();
 
         $this->assertNotEmpty($data);

@@ -26,5 +26,7 @@ class GetTest extends \PHPUnit\Framework\TestCase
             ->execute();
 
         $this->assertNotEmpty($data);
+        $this->assertEquals(37372309, $data->id);
+        $this->assertNotEmpty($data->description);
     }
 }
