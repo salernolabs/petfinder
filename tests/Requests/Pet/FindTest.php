@@ -16,20 +16,33 @@ class FindTest extends \PHPUnit\Framework\TestCase
      * Test the query
      *
      * @throws \SalernoLabs\Petfinder\Exceptions\Exception
+     * @dataProvider queryDataProvider
      */
-    public function testQuery()
+    public function testQuery($age, $animal, $zip)
     {
         $query = new \SalernoLabs\Petfinder\Requests\Pet\Find($this->configuration);
 
         $data = $query
-            ->setAge('Young')
-            ->setAnimal('bird')
-            ->setLocation('10014')
+            ->setAge($age)
+            ->setAnimal($animal)
+            ->setLocation($zip)
             ->setCount(10)
             ->execute();
 
         $this->assertInstanceOf('\SalernoLabs\Petfinder\Responses\PetList', $data);
         $this->assertNotEmpty($data->pets);
-        $this->assertEquals(10, $data->count);
+        $this->assertLessThanOrEqual(10, $data->count);
+    }
+
+    /**
+     * @return array
+     */
+    public function queryDataProvider()
+    {
+        return [
+            ['Young', 'bird', '10014'],
+            ['Adult', 'cat', '90210'],
+            ['Senior', 'dog', '45255']
+        ];
     }
 }

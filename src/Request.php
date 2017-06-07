@@ -82,19 +82,9 @@ abstract class Request implements RequestInterface
     {
         $this->validateRequiredParametersArePresent();
 
-        $result = null;
-        if (static::PETFINDER_REQUEST_TYPE == 'GET')
-            $result = $this->makeGuzzleGETRequest();
-        elseif (static::PETFINDER_REQUEST_TYPE == 'POST')
-            $result = $this->makeGuzzlePOSTRequest();
+        $result = $this->makeAPIRequest();
 
-        //Validate the result
-        if (empty($result) || $result->getStatusCode() != 200)
-        {
-            throw new Exceptions\Exception("Failed to make a successful request to petfinder api endpoint " . $this->configuration->getEndPoint() . static::PETFINDER_COMMAND . " with error code " . $result->getStatusCode() . " and error " . $result->getReasonPhrase());
-        }
-
-        $data = json_decode($result->getBody());
+        $data = json_decode($result);
 
         if (empty($data))
         {
@@ -168,58 +158,21 @@ abstract class Request implements RequestInterface
 
 
     /**
-     * Make Guzzle POST Request
+     * Make Guzzle Request
      *
-     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @return string
      */
-    private function makeGuzzlePOSTRequest()
+    private function makeAPIRequest()
     {
-        //Initialize guzzle
-        $client = new \GuzzleHttp\Client(
-            [
-                'base_uri' => $this->configuration->getEndPoint()
-            ]
-        );
-
-        $commandParameters = array_merge(
-            [
-                //'format'=>'json',
-                'key'=>$this->configuration->getKey()
-            ],
-            $this->parameters
-        );
-
-        //Sign the request
-        //$commandParameterString = http_build_query($commandParameters);
-        $commandParameterString = '';
-        foreach ($commandParameters as $field => $value)
+        if ($this->configuration->getTestMode())
         {
-            if (!empty($commandParameterString)) $commandParameterString .= '&';
-
-            $commandParameterString .= $field . '=' . urlencode($value);
+            $result = $this->checkForCachedTestCopy();
+            if (!empty($result))
+            {
+                return $result;
+            }
         }
 
-        $commandParameters['sig'] = md5($this->configuration->getSecret() . $commandParameterString);
-
-        $commandParameterString .= '&sig=' . $commandParameters['sig'];
-
-        $requestParameters = [
-            'body' => $commandParameterString,
-        ];
-
-        //$endPoint = $this->configuration->getEndPoint() . static::PETFINDER_COMMAND;
-
-        //Make the request
-        return $client->request('POST', '/' . static::PETFINDER_COMMAND, $requestParameters);
-    }
-
-    /**
-     * Make Guzzle GET request
-     *
-     * @return mixed|\Psr\Http\Message\ResponseInterface
-     */
-    private function makeGuzzleGETRequest()
-    {
         //Initialize guzzle
         $client = new \GuzzleHttp\Client(
             [
@@ -243,14 +196,83 @@ abstract class Request implements RequestInterface
 
             $commandParameterString .= $field . '=' . urlencode($value);
         }
+
         $commandParameters['sig'] = md5($this->configuration->getSecret() . $commandParameterString);
 
-        $requestParameters = [
-            'query' => $commandParameters,
-        ];
+        $requestParameters = [];
+        if (static::PETFINDER_REQUEST_TYPE == 'POST')
+        {
+            $commandParameterString .= '&sig=' . $commandParameters['sig'];
+
+            $requestParameters = [
+                'body' => $commandParameterString,
+            ];
+        }
+        else if (static::PETFINDER_REQUEST_TYPE == "GET")
+        {
+            $requestParameters = [
+                'query' => $commandParameters,
+            ];
+        }
 
         //Make the request
-        return $client->request('GET', '/' . static::PETFINDER_COMMAND, $requestParameters);
+        $result = $client->request(static::PETFINDER_REQUEST_TYPE, '/' . static::PETFINDER_COMMAND, $requestParameters);
+
+        //Validate the result
+        if (empty($result) || $result->getStatusCode() != 200)
+        {
+            throw new Exceptions\Exception("Failed to make a successful request to petfinder api endpoint " . $this->configuration->getEndPoint() . static::PETFINDER_COMMAND . " with error code " . $result->getStatusCode() . " and error " . $result->getReasonPhrase());
+        }
+
+        $body = $result->getBody();
+
+        if ($this->configuration->getTestMode())
+        {
+            $this->saveCachedTestCopy($body);
+        }
+
+        return $body;
+    }
+
+    /**
+     * Check for a cached test copy
+     */
+    private function checkForCachedTestCopy()
+    {
+        $cacheKey = $this->getCachedTestKey();
+
+        $filename = getcwd() . '/tests/data/' . $cacheKey . '.txt';
+        if (file_exists($filename))
+        {
+            return base64_decode(file_get_contents($filename));
+        }
+
+        return false;
+    }
+
+    /**
+     * Save cached copy
+     *
+     * @param $data
+     */
+    private function saveCachedTestCopy($data)
+    {
+        $cacheKey = $this->getCachedTestKey();
+
+        $filename = getcwd() . '/tests/data/' . $cacheKey . '.txt';
+
+        //We'll base64_encode this so we don't provide raw feed content to search engine perusal
+        file_put_contents($filename, base64_encode($data));
+    }
+
+    /**
+     * Get cache key
+     *
+     * @return string
+     */
+    private function getCachedTestKey()
+    {
+        return static::PETFINDER_COMMAND . '-' . str_replace(['&','='], '-', http_build_query($this->parameters));
     }
 
     /**

@@ -16,18 +16,31 @@ class GetRandomTest extends \PHPUnit\Framework\TestCase
      * Test the query
      *
      * @throws \SalernoLabs\Petfinder\Exceptions\Exception
+     * @dataProvider dataProvider
      */
-    public function testQuery()
+    public function testQuery($animal, $zip)
     {
         $query = new \SalernoLabs\Petfinder\Requests\Pet\GetRandom($this->configuration);
 
         $data = $query
-            ->setAnimal('bird')
-            ->setLocation('10014')
+            ->setAnimal($animal)
+            ->setLocation($zip)
             ->setOutputType('full')
             ->execute();
 
         $this->assertInstanceOf('\SalernoLabs\Petfinder\Responses\Pet', $data);
         $this->assertNotEmpty($data);
+    }
+
+    /**
+     * Data provider for queries
+     */
+    public function dataProvider()
+    {
+        return [
+            ['bird', '10014'],
+            ['dog', '42410'],
+            ['cat', '90210']
+        ];
     }
 }

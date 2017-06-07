@@ -21,9 +21,12 @@ class  Media
      */
     public function __construct($rawData)
     {
-        foreach ($rawData->photos->photo as $photoRawData)
+        if (!empty($rawData->photos->photo))
         {
-            $this->photos[] = new Photo($photoRawData);
+            foreach ($rawData->photos->photo as $photoRawData)
+            {
+                $this->photos[] = new Photo($photoRawData);
+            }
         }
     }
 }
