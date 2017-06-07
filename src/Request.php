@@ -88,12 +88,12 @@ abstract class Request implements RequestInterface
 
         if (empty($data))
         {
-            throw new Exceptions\Exception("Retrieved non-JSON content from petfinder api endpoint " . $this->configuration->getEndPoint() . static::PETFINDER_COMMAND);
+            throw new Exceptions\Exception("Retrieved non-JSON content from petfinder api endpoint " . $this->configuration->getEndPoint() . '/' . static::PETFINDER_COMMAND);
         }
 
         if (empty($data->petfinder) || empty($data->petfinder->header->status->code->{'$t'}))
         {
-            throw new Exceptions\Exception("Unknown JSON formatted content returned from petfinder api endpoint " . $this->configuration->getEndPoint() . static::PETFINDER_COMMAND);
+            throw new Exceptions\Exception("Unknown JSON formatted content returned from petfinder api endpoint " . $this->configuration->getEndPoint() . '/' . static::PETFINDER_COMMAND);
         }
 
         if ($data->petfinder->header->status->code->{'$t'} != 100)
@@ -221,12 +221,12 @@ abstract class Request implements RequestInterface
         //Validate the result
         if (empty($result) || $result->getStatusCode() != 200)
         {
-            throw new Exceptions\Exception("Failed to make a successful request to petfinder api endpoint " . $this->configuration->getEndPoint() . static::PETFINDER_COMMAND . " with error code " . $result->getStatusCode() . " and error " . $result->getReasonPhrase());
+            throw new Exceptions\Exception("Failed to make a successful request to petfinder api endpoint " . $this->configuration->getEndPoint() . '/' . static::PETFINDER_COMMAND . " with error code " . $result->getStatusCode() . " and error " . $result->getReasonPhrase());
         }
 
         $body = $result->getBody();
 
-        if ($this->configuration->getTestMode())
+        if (!empty($body) && $this->configuration->getTestMode())
         {
             $this->saveCachedTestCopy($body);
         }

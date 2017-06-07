@@ -1,5 +1,7 @@
 # salernolabs/petfinder
 
+[![Build Status](https://travis-ci.org/salernolabs/petfinder.svg?branch=master)](https://travis-ci.org/salernolabs/petfinder)
+
 This is an unofficial PHP Petfinder API SDK that uses the freely available [petfinder api](https://www.petfinder.com/developers/api-docs). Here are some important bits from their documentation that you should read before using this.
 
     Getting Started
