@@ -35,6 +35,7 @@ class ListByBreedTest extends \PHPUnit\Framework\TestCase
             ->execute();
 
         $this->assertNotEmpty($data);
+        $this->assertInstanceOf('\SalernoLabs\Petfinder\Responses\ShelterList', $data);
     }
 
     /**

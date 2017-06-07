@@ -28,6 +28,7 @@ class FindTest extends \PHPUnit\Framework\TestCase
             ->setCount(10)
             ->execute();
 
+        $this->assertInstanceOf('\SalernoLabs\Petfinder\Responses\PetList', $data);
         $this->assertNotEmpty($data->pets);
         $this->assertEquals(10, $data->count);
     }

@@ -25,6 +25,7 @@ class GetTest extends \PHPUnit\Framework\TestCase
             ->setId(37372309)
             ->execute();
 
+        $this->assertInstanceOf('\SalernoLabs\Petfinder\Responses\Pet', $data);
         $this->assertNotEmpty($data);
         $this->assertEquals(37372309, $data->id);
         $this->assertNotEmpty($data->description);

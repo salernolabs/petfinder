@@ -24,8 +24,10 @@ class GetRandomTest extends \PHPUnit\Framework\TestCase
         $data = $query
             ->setAnimal('bird')
             ->setLocation('10014')
+            ->setOutputType('full')
             ->execute();
 
+        $this->assertInstanceOf('\SalernoLabs\Petfinder\Responses\Pet', $data);
         $this->assertNotEmpty($data);
     }
 }

@@ -25,6 +25,8 @@ class GetTest extends \PHPUnit\Framework\TestCase
             ->setId('NY1100')
             ->execute();
 
-        $this->assertNotEmpty($data);
+        $this->assertInstanceOf('\SalernoLabs\Petfinder\Responses\Shelter', $data);
+        $this->assertNotEmpty($data->id);
+        $this->assertNotEmpty($data->country);
     }
 }

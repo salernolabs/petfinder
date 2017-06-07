@@ -154,6 +154,14 @@ abstract class Request implements RequestInterface
 
             return $array;
         }
+        else if (!empty($data->petfinder->shelters->shelter))
+        {
+            return new \SalernoLabs\Petfinder\Responses\ShelterList($data);
+        }
+        else if (!empty($data->petfinder->shelter))
+        {
+            return new \SalernoLabs\Petfinder\Responses\Shelter($data->petfinder->shelter);
+        }
 
         return $data->petfinder;
     }
