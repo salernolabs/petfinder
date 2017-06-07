@@ -16,17 +16,39 @@ class ListByBreedTest extends \PHPUnit\Framework\TestCase
      * Test query
      *
      * @throws \SalernoLabs\Petfinder\Exceptions\Exception
+     * @dataProvider dataProviderValidRequest
      */
-    public function testQuery()
+    public function testQuery($animal)
     {
+        $query = new \SalernoLabs\Petfinder\Requests\Breed\GetList($this->configuration);
+        $breeds = $query
+            ->setAnimal($animal)
+            ->execute();
+
+        $this->assertNotEmpty($breeds->breeds->breed[0]->{'$t'});
+
         $query = new \SalernoLabs\Petfinder\Requests\Shelter\ListByBreed($this->configuration);
 
         $data = $query
-            ->setId('NY1100')
-            ->setAnimal('dog')
-            ->setBreed('Siberian Husky')
+            ->setAnimal($animal)
+            ->setBreed($breeds->breeds->breed[0]->{'$t'})
             ->execute();
 
         $this->assertNotEmpty($data);
+    }
+
+    /**
+     * @return array
+     */
+    public function dataProviderValidRequest()
+    {
+        return [
+            ['barnyard'],
+            ['cat'],
+            ['dog'],
+            ['horse'],
+            ['pig'],
+            ['smallfurry']
+        ];
     }
 }
